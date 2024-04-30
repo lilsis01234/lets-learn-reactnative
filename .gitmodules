@@ -1,0 +1,7 @@
+[submodule "front"]
+	url = https://github.com/lilsis01234/lets-learn-reactnative.git
+[submodule "back"]
+	url = https://github.com/lilsis01234/lets-learn-reactnative.git
+[submodule "ato/front"]
+	path = ato/front
+	url = https://github.com/lilsis01234/lets-learn-reactnative.git
