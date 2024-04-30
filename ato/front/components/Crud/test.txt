@@ -1,0 +1,351 @@
+bonjour 
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import axios from 'axios';
+import * as ImagePicker from "expo-image-picker";
+
+const AddAnimalForm = ({ dispatch, onClose, navigation }) => {
+  const [nom, setNom] = useState('');
+  const [type, setType] = useState('');
+  const [couleur, setCouleur] = useState('');
+  const [age, setAge] = useState('');
+  const [sexe, setSexe] = useState('');
+  const [image, setImage] = useState(null); 
+  const [description, setDescription] = useState('');
+
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: false,
+      aspect: [4, 3],
+      quality: 1,
+      base64: false,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('nom', nom);
+      formData.append('type', type);
+      formData.append('couleur', couleur);
+      formData.append('age', age);
+      formData.append('sexe', sexe);
+      formData.append('description', description);
+      if(image){
+        const response = await fetch(image);
+        const blob = await response.blob();
+        formData.append("photo", blob, "photo.jpg");
+      }
+
+      const res = await axios.post('http://localhost:3000/crud/new', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setNom('');
+      setType('');
+      setCouleur('');
+      setAge('');
+      setSexe('');
+      setDescription('');
+      setImage(null);
+      navigation.navigate('Accueil');
+    } catch (error) {
+      console.error('Error while submitting:', error);
+    }
+  };
+  
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.imageButton}
+        onPress={pickImage}
+      >
+        <Text style={styles.imageButtonText}>Sélectionner une photo</Text>
+      </TouchableOpacity>
+      {image && (
+        <Image
+          source={{ uri: image }}
+          style={styles.imagePreview}
+        />
+      )}
+      <TextInput style={styles.input} placeholder="Nom" value={nom} onChangeText={setNom} />
+      <TextInput style={styles.input} placeholder="Type" value={type} onChangeText={setType} />
+      <TextInput style={styles.input} placeholder="Couleur" value={couleur} onChangeText={setCouleur} />
+      <TextInput style={styles.input} placeholder="Age" value={age} onChangeText={setAge} />
+      <TextInput style={styles.input} placeholder="Sexe" value={sexe} onChangeText={setSexe} />
+      <TextInput style={styles.input} placeholder="Description" value={description} onChangeText={setDescription} />
+
+
+      <TouchableOpacity style={styles.editButton} onPress={handleSubmit}>
+        <Text>Ajouter</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editButton: {
+    backgroundColor: 'orange',
+    borderRadius: 5,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+export default AddAnimalForm;
+
+import React, { useState } from 'react';
+import { View, TextInput, Button, Image, TouchableOpacity, Text } from 'react-native';
+import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+
+const EditAnimalForm = ({ route, navigation }) => {
+  console.log(route.params.animal)
+  const animal = route.params.animal;
+  const [nom, setNom] = useState(animal.nom);
+  const [type, setType] = useState(animal.type);
+  const [couleur, setCouleur] = useState(animal.couleur);
+  const [description, setDescription] = useState(animal.description);
+  const [image, setImage] = useState(animal.image);
+  let blob;
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: false,
+      aspect: [4, 3],
+      quality: 1,
+      base64: false,
+    });
+  
+    if (!result.cancelled) {
+      if (!image || result.assets[0].uri !== image) {
+        setImage(result.assets[0].uri);
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData();
+  
+      if (image && image !== animal.image) { 
+        const response = await fetch(image);
+        blob = await response.blob();
+        formData.append('photo', blob, 'photo.jpg');
+      }
+  
+      formData.append('nom', nom);
+      formData.append('type', type);
+      formData.append('couleur', couleur);
+      formData.append('description', description);
+  
+      const response = await axios.put(`http://localhost:3000/crud/${animal.id}/edit`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      console.log(response.data);
+      onClose();
+      navigation.navigate('Accueil'); 
+    } catch (error) {
+      console.error('Error updating animal:', error);
+    }
+  };
+  
+  const styles = {
+    imageButton: {
+      backgroundColor: '#DDDDDD',
+      padding: 10,
+      borderRadius: 5,
+      marginTop: 10,
+    },
+    imageButtonText: {
+      textAlign: 'center',
+    },
+  };
+
+  return (
+    <View>
+      <TextInput placeholder="Nom" value={nom} onChangeText={setNom} />
+      <TextInput placeholder="Type" value={type} onChangeText={setType} />
+      <TextInput placeholder="Couleur" value={couleur} onChangeText={setCouleur} />
+      <TextInput placeholder="Description" value={description} onChangeText={setDescription} />
+      <View>
+        {image && <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />}
+      </View>
+      <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
+        <Text style={styles.imageButtonText}>Sélectionner une photo</Text>
+      </TouchableOpacity>
+      <Button title="Save" onPress={handleSubmit} />
+    </View>
+  );
+};
+
+export default EditAnimalForm;
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import axios from 'axios';
+import { FontAwesome5 } from '@expo/vector-icons';
+import mimi from '../../Home/mimi.gif';
+const AnimalList = ({ navigation }) => {
+  const [animals, setAnimals] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/crud/allAnimal')
+      .then((response) =>
+        {
+          setAnimals(response.data);
+          console.log(response.data)
+        })
+      .catch ((error)=> {
+        console.error('Error fetching animals:', error);
+      })
+  }, []);
+
+  const handleToggleFavorite = (id) => {
+    console.log('Toggling favorite for animal with ID:', id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/crud/animal/${id}`);
+      setAnimals(animals.filter(animal => animal.id !== id));
+    } catch (error) {
+      console.error('Error deleting animal:', error);
+    }
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      padding: 10,
+      borderBottomWidth: 1,
+      backgroundColor: 'white'
+    },
+    animalInfo: {
+      flex: 1,
+      marginLeft: 10,
+    },
+    animalImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+    },
+    editButton: {
+      backgroundColor: 'orange',
+      borderRadius: 5,
+      padding: 5,
+    },
+    deleteButton: {
+      backgroundColor: 'orange',
+      borderRadius: 5,
+      padding: 5,
+    },
+    title: {
+      fontSize: 24,
+      marginBottom: 20,
+      color: 'rgb(239, 135, 11)',
+      fontFamily: 'Arial',
+    },
+    heartIcon: {
+      position: 'absolute',
+      top: 5,
+      right: 35,
+    },
+    addButton: {
+      position: 'absolute',
+      bottom: 20,
+      right: 20,
+      backgroundColor: 'rgb(239, 135, 11)',
+      padding: 20,
+      borderRadius: 100,
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 24,
+      opacity:1,
+    },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  });
+
+  return (
+    <>
+      <FlatList
+        data={animals}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => console.log('Pressed:', item.nom)}>
+            <View style={styles.container}>
+              <Image source={{ uri:  item.image ?`http://localhost:3000/${item.image}`: mimi }} style={styles.animalImage} />
+              <View style={styles.animalInfo}>
+                <Text style={styles.title}>{item.nom}</Text>
+                <Text>{item.type}</Text>
+                <Text>{item.couleur}</Text>
+                <View style={styles.buttonsContainer}>
+
+                  <TouchableOpacity 
+                    style={styles.editButton} 
+                    onPress={() => {
+                      navigation.navigate('modification', { animal: item });
+                    }}>
+                    <FontAwesome5 name="pen" size={20} color="white" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    style={styles.deleteButton} 
+                    onPress={() => handleDelete(item.id)}>
+                    <FontAwesome5 name="trash-alt" size={20} color="white" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.heartIcon} onPress={() => handleToggleFavorite(item.id)}>
+                <FontAwesome5 name="heart" size={20} color={item.isFavorite ? 'red' : 'black'} />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
+    <TouchableOpacity
+      style={styles.addButton}
+      onPress={() => {
+        navigation.navigate('Ajout');
+      }}>
+       <Text style={styles.buttonText}>+</Text>
+    </TouchableOpacity>
+    </>
+  );
+};
+
+export default AnimalList;
+
+chaque fois que je fais un ajout ou modification, j'ai toujours besoin de recharger la page pour que les modification s'affichent alors que je veux ne pas avoir besoin de raffraichir la page chaque fois que j'ajoute ou je modifie et que je suis redirigé sur la page liste d'animaux, je veux que ça s'affiche automatiquement
