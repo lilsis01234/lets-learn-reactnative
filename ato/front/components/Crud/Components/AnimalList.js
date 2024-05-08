@@ -20,8 +20,15 @@ const AnimalList = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const handleToggleFavorite = (id) => {
-    console.log('Toggling favorite for animal with ID:', id);
+  const handleToggleFavorite = async (id) => {
+    try {
+      await axios.post(`http://localhost:3000/crud/addFavorite/${id}`);
+      setAnimals(prevAnimals => prevAnimals.map(animal =>
+        animal.id === id ? { ...animal, favorite: !animal.favorite } : animal
+      ));
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -121,7 +128,7 @@ const AnimalList = ({ navigation }) => {
                 </View>
               </View>
               <TouchableOpacity style={styles.heartIcon} onPress={() => handleToggleFavorite(item.id)}>
-                <FontAwesome5 name="heart" size={20} color={item.isFavorite ? 'red' : 'black'} />
+                <FontAwesome5 name="heart" size={20} color={item.favorite ? 'red' : 'black'} />
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

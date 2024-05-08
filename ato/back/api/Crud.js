@@ -29,6 +29,24 @@ catch (error) {
 }
 });
 
+router.post('/addFavorite/:id', async (req, res) => {
+    const idAnimal = req.params.id;
+    try {
+        const animal = await Animals.findByPk(idAnimal);
+        if (!animal) {
+            return res.status(404).json({ message: "Le animal n'a pas été trouvé." });
+        }
+        const updatedFavoriteValue = !animal.favorite;
+        await Animals.update(
+            { favorite: updatedFavoriteValue },
+            { where: { id: idAnimal } }
+        );
+        return res.status(200).json({ favorite: updatedFavoriteValue });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Une erreur est survenue." });
+    }
+});
 
 // Configuration Multer pour spécifier où stocker les fichiers téléchargés
 const storage = multer.diskStorage({
