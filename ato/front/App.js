@@ -5,6 +5,7 @@ import Register from './components/Home/Register';
 import AddAnimalForm from './components/Crud/Components/AddAnimalForm';
 import EditAnimalForm from './components/Crud/Components/EditAnimalForm';
 import AnimalList from './components/Crud/Components/AnimalList';
+import SeeMore from './components/Crud/Components/SeeMore';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ const App = () => {
         <Stack.Screen name="Accueil" component={AnimalList} />
         <Stack.Screen name="Ajout" component={AddAnimalForm} />
         <Stack.Screen name="Modification" component={EditAnimalForm} initialParams={{ animal: null }} />
+        <Stack.Screen name="SeeMore" component={SeeMore} initialParams={{ animal: null }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

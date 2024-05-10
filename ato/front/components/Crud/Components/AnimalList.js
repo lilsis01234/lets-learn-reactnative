@@ -113,6 +113,14 @@ const AnimalList = ({ navigation }) => {
                 <View style={styles.buttonsContainer}>
 
                   <TouchableOpacity 
+                    style={styles.deleteButton} 
+                    onPress={() => {
+                      navigation.navigate('SeeMore', { animal: item });
+                    }}>
+                    <FontAwesome5 name="eye" size={20} color="white" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
                     style={styles.editButton} 
                     onPress={() => {
                       navigation.navigate('Modification', { animal: item });
