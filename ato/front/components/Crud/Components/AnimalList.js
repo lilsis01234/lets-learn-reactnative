@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
 import { FontAwesome5 } from '@expo/vector-icons';
+import * as Animatable from 'react-native-animatable';
 import mimi from '../../Home/mimi.gif';
 const AnimalList = ({ navigation }) => {
   const [animals, setAnimals] = useState([]);
@@ -44,39 +45,60 @@ const AnimalList = ({ navigation }) => {
     container: {
       flexDirection: 'row',
       padding: 10,
-      borderBottomWidth: 1,
-      backgroundColor: 'white'
+      backgroundColor: 'orange',
+      borderRadius: 10,
+      // borderBottomWidth: 1,
+      // borderBottomColor: 'gray',
+      margin: 10,
     },
     animalInfo: {
       flex: 1,
       marginLeft: 10,
     },
     animalImage: {
-      width: 100,
-      height: 100,
+      width: 50,
+      height: 50,
       borderRadius: 50,
     },
+    showButton: {
+      backgroundColor: 'white',
+
+      borderRadius: 5,
+      padding: 5,
+    },
     editButton: {
-      backgroundColor: 'orange',
+      backgroundColor: 'yellow',
       borderRadius: 5,
       padding: 5,
     },
     deleteButton: {
-      backgroundColor: 'orange',
+      backgroundColor: 'red',
       borderRadius: 5,
       padding: 5,
     },
+    subtitle:{
+      fontSize: 16,
+      color: 'white',
+      fontFamily: 'Arial',
+      marginBottom: 10,
+    },  
     title: {
       fontSize: 24,
       marginBottom: 20,
-      color: 'rgb(239, 135, 11)',
+      color: 'white',
       fontFamily: 'Arial',
     },
     heartIcon: {
-      position: 'absolute',
+      position: 'abuttonsContainerbsolute',
       top: 5,
       right: 35,
     },
+    buttonsContainer:{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '50%',
+
+    },  
     addButton: {
       position: 'absolute',
       bottom: 20,
@@ -103,43 +125,45 @@ const AnimalList = ({ navigation }) => {
       <FlatList
         data={animals}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => console.log('Pressed:', item.nom)}>
-            <View style={styles.container}>
-              <Image source={{ uri:  item.image ?`http://localhost:3000/${item.image}`: mimi }} style={styles.animalImage} />
-              <View style={styles.animalInfo}>
-                <Text style={styles.title}>{item.nom}</Text>
-                <Text>{item.type}</Text>
-                <Text>{item.couleur}</Text>
-                <View style={styles.buttonsContainer}>
+          <Animatable.View animation="fadeInUp" >
+            <TouchableOpacity onPress={() => console.log('Pressed:', item.nom)}>
+              <View style={styles.container}>
+                <Image source={{ uri:  item.image ?`http://localhost:3000/${item.image}`: mimi }} style={styles.animalImage} />
+                <View style={styles.animalInfo}>
+                  <Text style={styles.title}>{item.nom}</Text>
+                  <Text style={styles.subtitle}>Type : {item.type}</Text>
+                  <Text style={styles.subtitle}>Couleur: {item.couleur}</Text>
+                  <View style={styles.buttonsContainer}>
 
-                  <TouchableOpacity 
-                    style={styles.deleteButton} 
-                    onPress={() => {
-                      navigation.navigate('SeeMore', { animal: item });
-                    }}>
-                    <FontAwesome5 name="eye" size={20} color="white" />
-                  </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.showButton} 
+                      onPress={() => {
+                        navigation.navigate('SeeMore', { animal: item });
+                      }}>
+                      <FontAwesome5 name="eye" size={20} color="orange" />
+                    </TouchableOpacity>
 
-                  <TouchableOpacity 
-                    style={styles.editButton} 
-                    onPress={() => {
-                      navigation.navigate('Modification', { animal: item });
-                    }}>
-                    <FontAwesome5 name="pen" size={20} color="white" />
-                  </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.editButton} 
+                      onPress={() => {
+                        navigation.navigate('Modification', { animal: item });
+                      }}>
+                      <FontAwesome5 name="pen" size={20} color="white" />
+                    </TouchableOpacity>
 
-                  <TouchableOpacity 
-                    style={styles.deleteButton} 
-                    onPress={() => handleDelete(item.id)}>
-                    <FontAwesome5 name="trash-alt" size={20} color="white" />
-                  </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.deleteButton} 
+                      onPress={() => handleDelete(item.id)}>
+                      <FontAwesome5 name="trash-alt" size={20} color="white" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                <TouchableOpacity style={styles.heartIcon} onPress={() => handleToggleFavorite(item.id)}>
+                  <FontAwesome5 name="heart" size={20} color={item.favorite ? 'red' : 'white'} />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.heartIcon} onPress={() => handleToggleFavorite(item.id)}>
-                <FontAwesome5 name="heart" size={20} color={item.favorite ? 'red' : 'black'} />
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </Animatable.View>
         )}
         keyExtractor={(item) => item.id.toString()}
       />

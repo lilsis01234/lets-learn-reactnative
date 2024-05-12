@@ -82,6 +82,12 @@ const Home = ({ navigation }) => {
             marginBottom: 20,
             borderRadius: 100, 
         },
+        content :{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+        }
     });
 
     return (
@@ -93,23 +99,25 @@ const Home = ({ navigation }) => {
             </View>
 
             <View style={styles.container}>
-                <Animatable.View animation="fadeInDown" style={{ alignItems: 'center' }}>
-                    <Image source={mimi} style={styles.gifImage} />
-                    <Text style={styles.title}><FontAwesome5 name="dog" size={20} color="rgb(239, 135, 11)" />Wel-Paw<FontAwesome5 name="cat" size={20} color="rgb(239, 135, 11)" /></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Votre email"
-                        onChangeText={(text) => setEmail(text)}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        secureTextEntry
-                        placeholder="Votre mot de passe"
-                        onChangeText={(text) => setPassword(text)}
-                    />
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Se connecter <FontAwesome5 name="paw" size={20} color="#ffffff" /> </Text>
-                    </TouchableOpacity>
+                <Animatable.View animation="fadeInDown">
+                    <View style={styles.content}>
+                        <Image source={mimi} style={styles.gifImage} />
+                    </View>
+                        <Text style={styles.title}><FontAwesome5 name="dog" size={20} color="rgb(239, 135, 11)" />Wel-Paw<FontAwesome5 name="cat" size={20} color="rgb(239, 135, 11)" /></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Votre email"
+                            onChangeText={(text) => setEmail(text)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            secureTextEntry
+                            placeholder="Votre mot de passe"
+                            onChangeText={(text) => setPassword(text)}
+                        />
+                        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                            <Text style={styles.buttonText}>Se connecter <FontAwesome5 name="paw" size={20} color="#ffffff" /> </Text>
+                        </TouchableOpacity>
                 </Animatable.View>
             </View>
         </>
