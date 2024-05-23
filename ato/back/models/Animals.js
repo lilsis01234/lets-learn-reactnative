@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/db');
+const Compte = require('./Compte');
 
 class Animals extends Model{};
 
@@ -30,10 +31,22 @@ Animals.init({
     favorite :{
         type: DataTypes.BOOLEAN(),
         allowNull:false
+    },
+    personne:{
+        type : DataTypes.INTEGER,
+        allowNull : false,
+        references : {
+        model : Compte,
+        key : 'id'
     }
+    },
 }, {
     sequelize,
     modelName: 'animals'
 })
-
+Animals.belongsTo(Compte, {
+    foreignKey : 'personne',
+    as: 'Personne',
+    onDelete : 'CASCADE'
+})
 module.exports = Animals

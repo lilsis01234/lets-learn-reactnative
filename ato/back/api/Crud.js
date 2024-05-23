@@ -2,11 +2,20 @@ const router = require('express').Router();
 const Animals = require('../models/Animals');
 const multer = require('multer');
 const fs = require('fs');
+const Compte = require('../models/Compte');
 
 router.get('/animal/:idAnimal', async (req, res) => {
   const id = req.params.idAnimal
   try {
-    const animal = await Animals.findByPk(id);
+    const animal = await Animals.findByPk(id, {
+        include:[
+            {
+                model: Compte,
+                as:'Personne',
+                attributes:['nom','id']
+            }
+        ]
+    });
     if (!animal) {
         return res.status(404).json({ error: 'animal introuvable' });
     }
@@ -20,7 +29,14 @@ catch (err) {
 
 router.get('/allAnimal', async (req, res) => {
   try {
-    const animals = await Animals.findAll()
+    const animals = await Animals.findAll({
+        include:[
+           { model:Compte,
+            as: 'Personne',
+            attributes:['nom','id']
+           }
+        ]
+    })
     res.status(200).json(animals)
 }
 catch (error) {
@@ -72,6 +88,7 @@ router.post('/new', upload.single('photo'), async (req, res) => {
           type:req.body.type,
           couleur:req.body.couleur,
           description:req.body.description,
+          personne : req.body.personne,
           favorite:0,
           image: image ? image.path.replace(/\\/g, '/') : null,
           age:req.body.age,

@@ -30,10 +30,7 @@ const SeeMore = ({ route, navigation }) => {
     },
     animalImage: {
         width: "100%",
-        // height: "100%",
-        minHeight: 300,
-        borderRadius: 20,
-        
+        minHeight: 300, 
     },
     container: {
         display: 'flex',
@@ -60,6 +57,12 @@ const SeeMore = ({ route, navigation }) => {
         marginBottom: 10,
         color: 'white',
     },
+    nom:{
+        fontSize: 40,
+        marginBottom: 10,
+        color: 'white',
+        fontStyle:'Italic'
+    }
 
   }
   
@@ -72,16 +75,18 @@ const SeeMore = ({ route, navigation }) => {
       
       <Image source={{ uri:  animal.image ?`http://localhost:3000/${animal.image}`: mimi }} style={styles.animalImage} />        <View style={styles.descriptionConteiner}>
           <View style={styles.description}>
-            <Text style={styles.text} >Nom: {animal.nom}</Text>
+            <Text style={styles.nom} >{animal.nom}</Text>
+            <Text style={styles.text} >Description: {animal.description}</Text>
             <Text style={styles.text} >Sexe: {animal.sexe}</Text>
             <Text style={styles.text} >Couleur: {animal.couleur}</Text>
             <Text style={styles.text} >Type: {animal.type}</Text>
             <Text style={styles.text} >Age: {animal.age}</Text>
-            <Text style={styles.text} >Description: {animal.description}</Text>
           </View>
-          <TouchableOpacity style={styles.heartIcon} onPress={() => handleToggleFavorite(animal.id)}>
-              <FontAwesome5 name="heart" size={20} color={animal.favorite ? 'red' : 'white'} />
-          </TouchableOpacity>
+            <Animatable.View animation="pulse" easing="ease-out" iterationCount={1}>
+              <TouchableOpacity style={styles.heartIcon} onPress={() => handleToggleFavorite(animal.id)}>
+                <FontAwesome5 name="heart" size={20} color={animal.favorite ? 'red' : 'white'} />
+              </TouchableOpacity>
+            </Animatable.View>
         </View>
     </View>
     </Animatable.View>

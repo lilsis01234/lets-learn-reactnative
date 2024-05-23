@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Image,Picker  } from 'react-native';
 import axios from 'axios';
 import * as ImagePicker from "expo-image-picker";
 
@@ -8,10 +8,10 @@ const AddAnimalForm = ({ dispatch, onClose, navigation }) => {
   const [type, setType] = useState('');
   const [couleur, setCouleur] = useState('');
   const [age, setAge] = useState('');
-  const [sexe, setSexe] = useState('');
+  const [sexe, setSexe] = useState('Male');
   const [image, setImage] = useState(null); 
   const [description, setDescription] = useState('');
-
+  const id = localStorage.getItem('id');
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -36,6 +36,8 @@ const AddAnimalForm = ({ dispatch, onClose, navigation }) => {
       formData.append('age', age);
       formData.append('sexe', sexe);
       formData.append('description', description);
+      formData.append('personne', id);
+
       if(image){
         const response = await fetch(image);
         const blob = await response.blob();
@@ -81,7 +83,14 @@ const AddAnimalForm = ({ dispatch, onClose, navigation }) => {
       <TextInput style={styles.input} placeholder="Type" value={type} onChangeText={setType} />
       <TextInput style={styles.input} placeholder="Couleur" value={couleur} onChangeText={setCouleur} />
       <TextInput style={styles.input} placeholder="Age" value={age} onChangeText={setAge} />
-      <TextInput style={styles.input} placeholder="Sexe" value={sexe} onChangeText={setSexe} />
+      <Picker
+        selectedValue={sexe}
+        style={styles.input}
+        onValueChange={(itemValue, itemIndex) => setSexe(itemValue)}
+      >
+        <Picker.Item label="Male" value="Male" />
+        <Picker.Item label="Femelle" value="Femelle" />
+      </Picker>
       <TextInput style={styles.input} placeholder="Description" value={description} onChangeText={setDescription} />
 
 

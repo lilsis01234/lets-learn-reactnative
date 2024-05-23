@@ -22,6 +22,9 @@ const Home = ({ navigation }) => {
                 console.log(data)
                 setAuthenticated(true);
                 localStorage.setItem('authenticated', authenticated);
+                localStorage.setItem('nom',response.data.nom);
+                localStorage.setItem('id',response.data.id);
+
                 navigation.navigate('Accueil');
             })
             .catch(error => {
@@ -72,9 +75,11 @@ const Home = ({ navigation }) => {
             color: "rgb(239, 135, 11)",
         },
         right: {
-            justifyContent: "flex-end",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingRight: 20, 
             backgroundColor: "#ffffff",
-            padding: 10
         },
         gifImage: {
             width: 200,
@@ -95,6 +100,9 @@ const Home = ({ navigation }) => {
             <View style={styles.right}>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <Text style={styles.optionText}>S'inscrire <FontAwesome5 name="paw" size={20} color="rgb(239, 135, 11)" /> </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Guest')}>
+                <Text style={styles.optionText}>Invité <FontAwesome5 name="paw" size={20} color="rgb(239, 135, 11)" /> </Text>
             </TouchableOpacity>
             </View>
 
